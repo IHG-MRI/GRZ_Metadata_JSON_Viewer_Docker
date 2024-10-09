@@ -1,0 +1,11 @@
+version: '1'
+services:
+  app:
+    build: .
+    ports:
+      - "9001:9001"  # Map container's port 9001 to host's port 9001 (adjust accordingly)
+    volumes:
+      - .:/app      # Mount the current directory to the /app directory in the container
+      - /app/node_modules # Exclude node_modules from being overwritten by the local version
+    environment:
+      - NODE_ENV=development
