@@ -1,5 +1,9 @@
 # Dockerized JSON Schema Viewer for the GRZ Metadata Schema
 
+## About
+
+This is a docker solution to easily deploy a json viewer for the GRZ metadata schema. The goal is to have a graphical representation of the json metadata schema.
+
 ## Steps to Deploy
 
 ### 1. Pull the Repository
