@@ -13,7 +13,7 @@ RUN npm install
 # Step 5: Install Grunt CLI 
 RUN npm install -g grunt-cli
 
-# Step 6: 
+# Step 6: Copy all relevant app files 
 COPY app_files/ .
 
 # Step 7: Expose the port that the Grunt server will run on
