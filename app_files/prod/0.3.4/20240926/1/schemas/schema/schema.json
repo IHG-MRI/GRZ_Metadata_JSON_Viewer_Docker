@@ -1,7 +1,7 @@
 {
   "id": "schema.json#",
   "$schema":"https://json-schema.org/draft/2020-12/schema",
-  "version":"1.1.1",
+  "version":"1.1.4",
   "title":"Metadata Submission Genomic Data Center (GRZ)",
   "description":"General metadata schema for submissions to the GRZ",
   "type":"object",
@@ -49,7 +49,7 @@
         },
         "localCaseId":{
           "type":"string",
-          "description":"A local case identifier for synchronizing locally"
+          "description":"A local case identifier of the Leistungserbringer to be able to track multiple submissions referring to the same index patient"
         },
         "coverageType":{
           "type":"string",
@@ -212,12 +212,12 @@
           "researchConsents":{
             "type":"array",
             "description":"Research consents. Multiple declarations of consent are possible! Must be assigned to the respective data sets.",
-            "required":[
-              "schemaVersion",
-              "scope"
-            ],
             "items":{
               "type":"object",
+              "required":[
+                "schemaVersion",
+                "scope"
+              ],
               "properties":{
                 "schemaVersion":{
                   "type":"string",

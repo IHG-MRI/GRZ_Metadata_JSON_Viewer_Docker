@@ -22,7 +22,7 @@ Clone or pull the repository from the source.
 Run the following command to build the Docker image without using the cache:
 
 ```
-docker-compose build --no-cache
+docker compose build --no-cache
 ```
 
 ### 3. Start the Application
@@ -30,7 +30,7 @@ docker-compose build --no-cache
 After the build is complete, start the application with:
 
 ```
-docker-compose up
+docker compose up
 ```
 
 ### 4. Access the JSON Schema Viewer
