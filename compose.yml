@@ -1,11 +1,66 @@
-version: '1'
+version: '3.8'
+
 services:
+  traefik:
+    image: traefik:v2.10
+    command:
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--entrypoints.http.address=:80"
+      - "--entrypoints.https.address=:443"
+      - "--certificatesresolvers.le.acme.httpchallenge=true"
+      - "--certificatesresolvers.le.acme.httpchallenge.entrypoint=http"
+      - "--certificatesresolvers.le.acme.email=jochen.blesch@helmholtz-munich.de"
+      - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./letsencrypt:/letsencrypt"
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.https-redirect.redirectscheme.permanent=true"
+
   app:
     build: .
-    ports:
-      - "9001:9001"  # Map container's port 9001 to host's port 9001 (adjust accordingly)
+    networks:
+      - traefik-public
     volumes:
-      - .:/app      # Mount the current directory to the /app directory in the container
-      - /app/node_modules # Exclude node_modules from being overwritten by the local version
+      - .:/app
+      - /app/node_modules
     environment:
       - NODE_ENV=development
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.app.entrypoints=http"
+      - "traefik.http.routers.app.middlewares=https-redirect"
+      - "traefik.http.routers.app-secure.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.app-secure.entrypoints=https"
+      - "traefik.http.routers.app-secure.tls=true"
+      - "traefik.http.routers.app-secure.tls.certresolver=le"
+      - "traefik.http.services.app.loadbalancer.server.port=9001"
+
+  adminer:
+    image: adminer
+    restart: always
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.adminer.rule=Host(`${DOMAIN}`) && PathPrefix(`/adminer`)"
+      - "traefik.http.routers.adminer.entrypoints=http"
+      - "traefik.http.routers.adminer.middlewares=https-redirect"
+      - "traefik.http.routers.adminer-secure.rule=Host(`${DOMAIN}`) && PathPrefix(`/adminer`)"
+      - "traefik.http.routers.adminer-secure.entrypoints=https"
+      - "traefik.http.routers.adminer-secure.tls=true"
+      - "traefik.http.routers.adminer-secure.tls.certresolver=le"
+      - "traefik.http.services.adminer.loadbalancer.server.port=8080"
+
+networks:
+  traefik-public:
+    external: false
